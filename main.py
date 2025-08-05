@@ -326,7 +326,8 @@ def show_projet2():
     try:
         # Image enregistrée localement
         image_path = "rendu.png"  # adapte le chemin si besoin
-        st.image(image_path, caption="Dashboard Power BI - Analyse du Marché", use_column_width=True)
+        st.image(image_path, caption="Dashboard Power BI - Analyse du Marché", use_container_width=True)
+
     except Exception as e:
         st.error(f"Erreur lors du chargement de l’image : {str(e)}")
 
