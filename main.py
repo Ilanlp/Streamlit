@@ -320,16 +320,17 @@ def show_candidate_profile():
 
 
 def show_projet2():
-    st.title("🧮 Visualisation Power BI")
-    st.markdown("Voici une capture de mon dashboard Power BI :")
+    st.title("📊 Projet 2 - Dashboard Power BI")
+    st.markdown("Voici mon dashboard interactif Power BI intégré :")
 
-    try:
-        # Image enregistrée localement
-        image_path = "rendu.png"  # adapte le chemin si besoin
-        st.image(image_path, caption="Dashboard Power BI - Analyse du Marché", use_container_width=True)
+    powerbi_url = "https://app.powerbi.com/groups/me/reports/9d47975b-4c53-45d7-b795-d693395b609c/f365327440c5572024eb?experience=power-bi"  # Remplace par ton lien
 
-    except Exception as e:
-        st.error(f"Erreur lors du chargement de l’image : {str(e)}")
+    st.components.v1.iframe(
+        src=powerbi_url,
+        height=800,
+        width=1000
+    )
+
 
 if __name__ == "__main__":
     main() 
