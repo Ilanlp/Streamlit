@@ -68,13 +68,15 @@ def main():
     # Menu de navigation
     page = st.sidebar.selectbox(
         "Choisissez une page :",
-        ["📍 Carte Villes / Régions + skills", "👤 Profile"]
+        ["📍 Carte Villes / Régions + skills", "👤 Profile","🧮 Projet 2"]
     )
     
     if page == "📍 Carte Villes / Régions + skills":
         show_map_analysis()
     elif page == "👤 Profile":
         show_candidate_profile()
+    elif page == "🧮 Projet 2":
+        show_projet2()
 
 def get_map_figure(data, label_col):
     """Crée une carte avec Plotly Express"""
@@ -315,6 +317,18 @@ def show_candidate_profile():
                 
         except Exception as e:
             st.error(f"❌ Erreur lors de la recherche : {str(e)}")
+
+
+def show_projet2():
+    st.title("🧮 Visualisation Power BI")
+    st.markdown("Voici une capture de mon dashboard Power BI :")
+
+    try:
+        # Image enregistrée localement
+        image_path = "rendu.png"  # adapte le chemin si besoin
+        st.image(image_path, caption="Dashboard Power BI - Analyse du Marché", use_column_width=True)
+    except Exception as e:
+        st.error(f"Erreur lors du chargement de l’image : {str(e)}")
 
 if __name__ == "__main__":
     main() 
