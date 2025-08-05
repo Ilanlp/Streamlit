@@ -5,6 +5,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 from dotenv import load_dotenv
 import os
+import streamlit.components.v1 as components
 
 load_dotenv()
 
