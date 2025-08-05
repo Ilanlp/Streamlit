@@ -303,11 +303,11 @@ def show_candidate_profile():
                         with st.container():
                             st.markdown(f"""
                             <div class="metric-card">
-                                <h4>🎯 {offre.get('title', 'Titre non disponible')}</h4>
-                                <p><strong>📍 Lieu:</strong> {offre.get('ville', 'Non spécifié')} ({offre.get('region', 'Région non spécifiée')})</p>
-                                <p><strong>💼 Contrat:</strong> {offre.get('type_contrat', 'Non spécifié')}</p>
-                                <p><strong>🛠️ Compétences:</strong> {', '.join(offre.get('skills', ['Non spécifiées']))}</p>
-                                <p><strong>🔗 Lien:</strong> <a href="{offre.get('source_url', '#')}" target="_blank">Voir l'offre</a></p>
+                                <h4>🎯 {offre.get('TITLE', 'Titre non disponible')}</h4>
+                                <p><strong>📍 Lieu:</strong> {offre.get('VILLE', 'Non spécifié')} ({offre.get('REGION', 'Région non spécifiée')})</p>
+                                <p><strong>💼 Contrat:</strong> {offre.get('TYPE_CONTRAT', 'Non spécifié')}</p>
+                                <p><strong>🛠️ Compétences:</strong> {', '.join(eval(offre.get('SKILLS', '[]')))}</p>
+                                <p><strong>🔗 Lien:</strong> <a href="{offre.get('SOURCE_URL', '#')}" target="_blank">Voir l'offre</a></p>
                             </div>
                             """, unsafe_allow_html=True)
             else:
