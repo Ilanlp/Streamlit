@@ -17,7 +17,7 @@ st.set_page_config(
 )
 
 # Variables globales
-API_BASE_URL = "https://back-end-render-dg5f.onrender.com/docs#/default/search_offres_search_get"
+API_BASE_URL = "https://back-end-render-dg5f.onrender.com"
 
 # CSS personnalisé pour un style moderne
 st.markdown("""
