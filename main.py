@@ -323,13 +323,14 @@ def show_projet2():
     st.title("📊 Projet 2 - Dashboard Power BI")
     st.markdown("Voici mon dashboard interactif Power BI intégré :")
 
-    powerbi_url = "https://app.powerbi.com/groups/me/reports/9d47975b-4c53-45d7-b795-d693395b609c/f365327440c5572024eb?experience=power-bi"  # Remplace par ton lien
+    powerbi_iframe = """
+    <iframe title="Back-to-Basic" width="800" height="600" 
+    src="https://app.powerbi.com/view?r=eyJrIjoiNjRkNjQ1ZjgtOWFjZS00ODhiLTg2MzktNmE5ZmJlYzdhMmFkIiwidCI6IjFjODA3N2YwLTY5MDItNDc1NC1hYzE4LTA4Zjc4ZjhlOTUxZSJ9" 
+    frameborder="0" allowFullScreen="true"></iframe>
+    """
 
-    st.components.v1.iframe(
-        src=powerbi_url,
-        height=800,
-        width=1000
-    )
+    # Affiche dans l'app Streamlit
+    components.html(powerbi_iframe, height=600, width=800)
 
 
 if __name__ == "__main__":
