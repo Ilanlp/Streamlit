@@ -266,6 +266,20 @@ def show_candidate_profile():
             options=contrats,
             placeholder="Choisissez des contrats..."
         )
+
+                st.subheader("🕒 Date de publication")
+        date_options = {
+            "⏰ Dernières 24h": "last_24h",
+            "🗓️ 3 derniers jours": "last_3_days",
+            "📆 7 derniers jours": "last_7_days"
+        }
+        selected_date_label = st.selectbox(
+            "Filtrer par date",
+            ["", *date_options.keys()],
+            index=0,
+            placeholder="Choisissez une période..."
+        )
+
     
     # Bouton de recherche
     if st.button("🔍 Rechercher", type="primary"):
@@ -287,6 +301,10 @@ def show_candidate_profile():
         if selected_contrats:
             for c in selected_contrats:
                 params.append(("contrat", c))
+        if selected_date_label:
+            date_filter_value = date_options[selected_date_label]
+            params.append(("date_filter", date_filter_value))
+
         
         try:
             response = requests.get(f"{API_BASE_URL}/search", params=params)
