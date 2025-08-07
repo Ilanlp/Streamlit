@@ -198,74 +198,44 @@ def show_map_analysis():
             st.error(f"❌ Erreur de chargement : {str(e)}")
 
 def show_candidate_profile():
-    """Page de profil candidat avec filtres"""
+    """Page de profil candidat avec filtres et pagination"""
     st.title("🎯 Filtres géographiques")
     
+    # Initialisation pagination
+    if "page" not in st.session_state:
+        st.session_state.page = 0
+    limit = 20
+    offset = st.session_state.page * limit
+
     # Récupération des données pour les dropdowns
     try:
-        # Villes
-        villes_response = requests.get(f"{API_BASE_URL}/candidat/ville")
-        villes = [v[0] for v in villes_response.json()["data"]] if villes_response.status_code == 200 else []
-        
-        # Départements
-        departements_response = requests.get(f"{API_BASE_URL}/candidat/departement")
-        departements = [d[0] for d in departements_response.json()["data"]] if departements_response.status_code == 200 else []
-        
-        # Régions
-        regions_response = requests.get(f"{API_BASE_URL}/candidat/region")
-        regions = [r[0] for r in regions_response.json()["data"]] if regions_response.status_code == 200 else []
-        
-        # Skills
-        skills_response = requests.get(f"{API_BASE_URL}/skills/")
-        skills = [s["skill"] for s in skills_response.json()] if skills_response.status_code == 200 else []
-        
-        # Contrats
-        contrat_response = requests.get(f"{API_BASE_URL}/candidat/contrat")
-        contrats = [c[0] for c in contrat_response.json()["data"]] if contrat_response.status_code == 200 else []
-        
+        villes = [v[0] for v in requests.get(f"{API_BASE_URL}/candidat/ville").json()["data"]]
+        departements = [d[0] for d in requests.get(f"{API_BASE_URL}/candidat/departement").json()["data"]]
+        regions = [r[0] for r in requests.get(f"{API_BASE_URL}/candidat/region").json()["data"]]
+        skills = [s["skill"] for s in requests.get(f"{API_BASE_URL}/skills/").json()]
+        contrats = [c[0] for c in requests.get(f"{API_BASE_URL}/candidat/contrat").json()["data"]]
     except Exception as e:
         st.error(f"Erreur lors du chargement des données : {str(e)}")
         return
     
     # Interface de filtres
     col1, col2 = st.columns(2)
-    
     with col1:
         st.subheader("🏙️ Villes")
-        selected_villes = st.multiselect(
-            "Sélectionnez une ou plusieurs villes",
-            options=villes,
-            placeholder="Choisissez des villes..."
-        )
-        
+        selected_villes = st.multiselect("Sélectionnez des villes", villes)
+
         st.subheader("🏞️ Départements")
-        selected_departements = st.multiselect(
-            "Sélectionnez un ou plusieurs départements",
-            options=departements,
-            placeholder="Choisissez des départements..."
-        )
-        
+        selected_departements = st.multiselect("Sélectionnez des départements", departements)
+
         st.subheader("🌍 Régions")
-        selected_regions = st.multiselect(
-            "Sélectionnez une ou plusieurs régions",
-            options=regions,
-            placeholder="Choisissez des régions..."
-        )
-    
+        selected_regions = st.multiselect("Sélectionnez des régions", regions)
+
     with col2:
         st.subheader("🧠 Skills")
-        selected_skills = st.multiselect(
-            "Sélectionnez une ou plusieurs compétences",
-            options=skills,
-            placeholder="Choisissez des compétences..."
-        )
-        
+        selected_skills = st.multiselect("Sélectionnez des compétences", skills)
+
         st.subheader("📋 Contrats")
-        selected_contrats = st.multiselect(
-            "Sélectionnez un ou plusieurs types de contrat",
-            options=contrats,
-            placeholder="Choisissez des contrats..."
-        )
+        selected_contrats = st.multiselect("Sélectionnez des contrats", contrats)
 
         st.subheader("🕒 Date de publication")
         date_options = {
@@ -273,56 +243,41 @@ def show_candidate_profile():
             "🗓️ 3 derniers jours": "last_3_days",
             "📆 7 derniers jours": "last_7_days"
         }
-        selected_date_label = st.selectbox(
-            "Filtrer par date",
-            ["", *date_options.keys()],
-            index=0,
-            placeholder="Choisissez une période..."
-        )
+        selected_date_label = st.selectbox("Filtrer par date", [""] + list(date_options.keys()))
 
-    
     # Bouton de recherche
     if st.button("🔍 Rechercher", type="primary"):
-        # Préparation des paramètres
-        params = []
-        
-        if selected_villes:
-            for v in selected_villes:
-                params.append(("ville", v))
-        if selected_departements:
-            for d in selected_departements:
-                params.append(("departement", d))
-        if selected_regions:
-            for r in selected_regions:
-                params.append(("region", r))
-        if selected_skills:
-            for s in selected_skills:
-                params.append(("skill", s))
-        if selected_contrats:
-            for c in selected_contrats:
-                params.append(("contrat", c))
-        if selected_date_label:
-            date_filter_value = date_options[selected_date_label]
-            params.append(("date_filter", date_filter_value))
+        st.session_state.page = 0  # reset à la première page
 
-        
-        try:
-            response = requests.get(f"{API_BASE_URL}/search", params=params)
-            
-            if response.status_code == 200:
-                data = response.json()
+    # Construction des paramètres
+    params = []
+    for v in selected_villes: params.append(("ville", v))
+    for d in selected_departements: params.append(("departement", d))
+    for r in selected_regions: params.append(("region", r))
+    for s in selected_skills: params.append(("skill", s))
+    for c in selected_contrats: params.append(("contrat", c))
+    if selected_date_label:
+        params.append(("date_filter", date_options[selected_date_label]))
+    params.append(("limit", limit))
+    params.append(("offset", offset))
+
+    # Appel API
+    try:
+        response = requests.get(f"{API_BASE_URL}/search", params=params)
+        if response.status_code == 200:
+            data = response.json()
+            offres = data.get("data", [])
+            total_count = data.get("total_count", 0)
+            total_pages = max((total_count + limit - 1) // limit, 1)
+
+            if not offres:
+                st.warning("Aucune offre trouvée.")
+            else:
+                st.subheader(f"📊 {total_count} offres trouvées – Page {st.session_state.page + 1} / {total_pages}")
                 
-                if not data or not data.get("data"):
-                    st.warning("Aucune offre trouvée.")
-                else:
-                    offres = data["data"]
-                    
-                    st.subheader(f"📊 Résultats de recherche ({len(offres)} offres trouvées)")
-                    
-                    # Affichage des résultats
-                    for i, offre in enumerate(offres, 1):
-                        with st.container():
-                            st.markdown(f"""
+                for i, offre in enumerate(offres, 1):
+                    with st.container():
+                        st.markdown(f"""
                             <div class="metric-card">
                                 <h4>🎯 {offre.get('TITLE', 'Titre non disponible')}</h4>
                                 <p><strong>📍 Lieu:</strong> {offre.get('VILLE', 'Non spécifié')} ({offre.get('REGION', 'Région non spécifiée')})</p>
@@ -330,26 +285,24 @@ def show_candidate_profile():
                                 <p><strong>🛠️ Compétences:</strong> {', '.join(eval(offre.get('SKILLS', '[]')))}</p>
                                 <p><strong>🔗 Lien:</strong> <a href="{offre.get('SOURCE_URL', '#')}" target="_blank">Voir l'offre</a></p>
                             </div>
-                            """, unsafe_allow_html=True)
-            else:
-                st.error(f"Erreur API: {response.status_code}")
-                
-        except Exception as e:
-            st.error(f"❌ Erreur lors de la recherche : {str(e)}")
+                        """, unsafe_allow_html=True)
 
-
-def show_projet2():
-    st.title("📊 Projet 2 - Dashboard Power BI")
-    st.markdown("Voici mon dashboard interactif Power BI intégré :")
-
-    powerbi_iframe = """
-    <iframe title="Back-to-Basic" width="800" height="600" 
-    src="https://app.powerbi.com/view?r=eyJrIjoiNjRkNjQ1ZjgtOWFjZS00ODhiLTg2MzktNmE5ZmJlYzdhMmFkIiwidCI6IjFjODA3N2YwLTY5MDItNDc1NC1hYzE4LTA4Zjc4ZjhlOTUxZSJ9" 
-    frameborder="0" allowFullScreen="true"></iframe>
-    """
-
-    # Affiche dans l'app Streamlit
-    components.html(powerbi_iframe, height=600, width=800)
+                # Pagination UI
+                col_prev, col_page, col_next = st.columns(3)
+                with col_prev:
+                    if st.button("⬅️ Page précédente") and st.session_state.page > 0:
+                        st.session_state.page -= 1
+                        st.experimental_rerun()
+                with col_page:
+                    st.markdown(f"<div style='text-align:center;font-weight:bold;'>📄 Page {st.session_state.page + 1} sur {total_pages}</div>", unsafe_allow_html=True)
+                with col_next:
+                    if st.button("➡️ Page suivante") and (st.session_state.page + 1) < total_pages:
+                        st.session_state.page += 1
+                        st.experimental_rerun()
+        else:
+            st.error(f"Erreur API: {response.status_code}")
+    except Exception as e:
+        st.error(f"❌ Erreur lors de la recherche : {str(e)}")
 
 
 if __name__ == "__main__":
