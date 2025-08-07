@@ -4,4 +4,5 @@ pandas
 plotly
 python-dotenv
 streamlit-option-menu 
-streamlit-js-eval
+streamlit-js-eval==0.1.5
+
