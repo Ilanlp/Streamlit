@@ -198,16 +198,13 @@ def show_projet2():
     st.markdown("Voici mon dashboard interactif Power BI intégré :")
 
     powerbi_iframe = """
-    <iframe title="Dashboard Power BI"
-        width="100%" 
-        height="1000" 
-        src="https://app.powerbi.com/view?r=eyJrIjoiNjRkNjQ1ZjgtOWFjZS00ODhiLTg2MzktNmE5ZmJlYzdhMmFkIiwidCI6IjFjODA3N2YwLTY5MDItNDc1NC1hYzE4LTA4Zjc4ZjhlOTUxZSJ9" 
-        frameborder="0" 
-        allowFullScreen="true">
-    </iframe>
+    <iframe title="Back-to-Basic" width="800" height="600" 
+    src="https://app.powerbi.com/view?r=eyJrIjoiNjRkNjQ1ZjgtOWFjZS00ODhiLTg2MzktNmE5ZmJlYzdhMmFkIiwidCI6IjFjODA3N2YwLTY5MDItNDc1NC1hYzE4LTA4Zjc4ZjhlOTUxZSJ9" 
+    frameborder="0" allowFullScreen="true"></iframe>
     """
 
-    components.html(powerbi_iframe, height=10200, scrolling=True)
+    # Affiche dans l'app Streamlit
+    components.html(powerbi_iframe, height=600, width=800)
 
 
 
