@@ -267,7 +267,7 @@ def show_candidate_profile():
             placeholder="Choisissez des contrats..."
         )
 
-                st.subheader("🕒 Date de publication")
+        st.subheader("🕒 Date de publication")
         date_options = {
             "⏰ Dernières 24h": "last_24h",
             "🗓️ 3 derniers jours": "last_3_days",
