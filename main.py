@@ -71,12 +71,11 @@ def main():
     # Menu de navigation
     page = st.sidebar.selectbox(
         "Choisissez une page :",
-        ["📍 Carte Villes / Régions + skills", "👤 Profile","🧮 Projet 2"]
+        ["👤 Profile","🧮 Projet 2"]
     )
     
-    if page == "📍 Carte Villes / Régions + skills":
-        show_map_analysis()
-    elif page == "👤 Profile":
+
+    if page == "👤 Profile":
         show_candidate_profile()
     elif page == "🧮 Projet 2":
         show_projet2()
