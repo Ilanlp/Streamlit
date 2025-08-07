@@ -6,6 +6,8 @@ import plotly.graph_objects as go
 from dotenv import load_dotenv
 import os
 import streamlit.components.v1 as components
+from streamlit_js_eval import streamlit_js_eval, get_geolocation
+
 
 load_dotenv()
 
@@ -202,7 +204,7 @@ def show_candidate_profile():
     st.title("🎯 Filtres géographiques")
 
     if st.session_state.get("scroll_to_top", False):
-        st.components.v1.html("<script>window.scrollTo(0, 0);</script>", height=0)
+        streamlit_js_eval(js_expressions=["window.scrollTo(0, 0)"])
         st.session_state.scroll_to_top = False
     
     # Initialisation pagination
