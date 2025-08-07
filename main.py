@@ -207,7 +207,7 @@ def show_projet2():
     </iframe>
     """
 
-    components.html(powerbi_iframe, height=1020, scrolling=True)
+    components.html(powerbi_iframe, height=10200, scrolling=True)
 
 
 
