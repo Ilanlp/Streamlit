@@ -196,6 +196,7 @@ def show_candidate_profile():
 def show_projet2():
     st.title("📊 Projet 2 - Dashboard Power BI")
     st.markdown("Voici mon dashboard interactif Power BI intégré :")
+    st.info("🔍 Pour profiter pleinement du dashboard, cliquez sur l’icône plein écran en bas à droite de la visualisation.")
 
     powerbi_iframe = """
     <iframe title="Back-to-Basic" width="800" height="600" 
