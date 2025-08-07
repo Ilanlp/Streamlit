@@ -80,124 +80,6 @@ def main():
     elif page == "🧮 Projet 2":
         show_projet2()
 
-def get_map_figure(data, label_col):
-    """Crée une carte avec Plotly Express"""
-    df = pd.DataFrame(data)
-    
-    if df.empty:
-        st.warning("Aucune donnée disponible pour cette sélection.")
-        return None
-    
-    fig = px.scatter_mapbox(
-        df,
-        lat="latitude",
-        lon="longitude",
-        size="count",
-        hover_name=label_col,
-        color=label_col,
-        size_max=50,
-        zoom=4,
-        height=600,
-        color_discrete_sequence=px.colors.qualitative.Pastel,
-    )
-    fig.update_layout(
-        mapbox_style="carto-positron",
-        margin={"r": 0, "t": 0, "l": 0, "b": 0},
-        paper_bgcolor="white",
-    )
-    return fig
-
-def get_skill_figure(data):
-    """Crée un graphique en barres pour les compétences"""
-    df = pd.DataFrame(data)
-    
-    if df.empty:
-        st.warning("Aucune donnée disponible pour les compétences.")
-        return None
-    
-    fig = px.bar(
-        df.sort_values("NB_OFFRES", ascending=False).head(20),
-        x="NB_OFFRES",
-        y="SKILL",
-        orientation="h",
-        title="Top Compétences Demandées sur le Marché",
-        labels={"NB_OFFRES": "Nombre d'offres", "SKILL": "Compétence"},
-        height=600
-    )
-    fig.update_layout(
-        yaxis=dict(autorange="reversed"),
-        paper_bgcolor="white",
-        plot_bgcolor="white",
-        margin={"r": 10, "t": 40, "l": 80, "b": 40},
-    )
-    return fig
-
-def show_map_analysis():
-    """Page d'analyse des cartes et compétences"""
-    st.title("🧭 Analyse du Marché de l'Emploi")
-    
-    # Sélecteur de vue
-    col1, col2, col3 = st.columns([1, 1, 1])
-    with col2:
-        view_type = st.radio(
-            "Choisissez le type d'analyse :",
-            ["📍 Carte des zones", "💼 Top Compétences"],
-            horizontal=True
-        )
-    
-    if view_type == "📍 Carte des zones":
-        st.subheader("Choisissez le niveau de regroupement géographique :")
-        
-        col1, col2, col3 = st.columns(3)
-        with col1:
-            zone_type = st.radio(
-                "Niveau géographique :",
-                ["🧭 Villes", "🗺️ Département", "🗺️ Régions"],
-                horizontal=False
-            )
-        
-        # Mapping des sélections
-        zone_mapping = {
-            "🧭 Villes": "ville",
-            "🗺️ Département": "departement", 
-            "🗺️ Régions": "region"
-        }
-        
-        selected_zone = zone_mapping[zone_type]
-        
-        try:
-            if selected_zone == "ville":
-                response = requests.get(f"{API_BASE_URL}/top_ville")
-            elif selected_zone == "departement":
-                response = requests.get(f"{API_BASE_URL}/top_departement")
-            else:
-                response = requests.get(f"{API_BASE_URL}/top_region")
-            
-            if response.status_code == 200:
-                data = response.json()["data"]
-                fig = get_map_figure(data, label_col=selected_zone)
-                if fig:
-                    st.plotly_chart(fig, use_container_width=True)
-            else:
-                st.error(f"Erreur API: {response.status_code}")
-                
-        except Exception as e:
-            st.error(f"❌ Erreur de chargement : {str(e)}")
-    
-    elif view_type == "💼 Top Compétences":
-        try:
-            response = requests.get(f"{API_BASE_URL}/top_skills")
-            if response.status_code == 200:
-                data = response.json()["data"]
-                fig = get_skill_figure(data)
-                if fig:
-                    st.plotly_chart(fig, use_container_width=True)
-            else:
-                st.error(f"Erreur API: {response.status_code}")
-                
-        except Exception as e:
-            st.error(f"❌ Erreur de chargement : {str(e)}")
-
 def show_candidate_profile():
     """Page de profil candidat avec filtres et pagination"""
     st.title("🎯 Filtres géographiques")
@@ -310,6 +192,19 @@ def show_candidate_profile():
             st.error(f"Erreur API: {response.status_code}")
     except Exception as e:
         st.error(f"❌ Erreur lors de la recherche : {str(e)}")
+
+def show_projet2():
+    st.title("📊 Projet 2 - Dashboard Power BI")
+    st.markdown("Voici mon dashboard interactif Power BI intégré :")
+
+    powerbi_iframe = """
+    <iframe title="Back-to-Basic" width="800" height="600" 
+    src="https://app.powerbi.com/view?r=eyJrIjoiNjRkNjQ1ZjgtOWFjZS00ODhiLTg2MzktNmE5ZmJlYzdhMmFkIiwidCI6IjFjODA3N2YwLTY5MDItNDc1NC1hYzE4LTA4Zjc4ZjhlOTUxZSJ9" 
+    frameborder="0" allowFullScreen="true"></iframe>
+    """
+
+    # Affiche dans l'app Streamlit
+    components.html(powerbi_iframe, height=600, width=800)
 
 
 if __name__ == "__main__":
