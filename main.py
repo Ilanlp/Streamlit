@@ -200,6 +200,10 @@ def show_map_analysis():
 def show_candidate_profile():
     """Page de profil candidat avec filtres et pagination"""
     st.title("🎯 Filtres géographiques")
+
+    if st.session_state.get("scroll_to_top", False):
+        st.components.v1.html("<script>window.scrollTo(0, 0);</script>", height=0)
+        st.session_state.scroll_to_top = False
     
     # Initialisation pagination
     if "page" not in st.session_state:
@@ -292,14 +296,14 @@ def show_candidate_profile():
                 with col_prev:
                     if st.button("⬅️ Page précédente") and st.session_state.page > 0:
                         st.session_state.page -= 1
-                        st.components.v1.html("<script>window.scrollTo(0, 0);</script>", height=0)
+                        st.session_state.scroll_to_top = True
                         st.rerun()
                 with col_page:
                     st.markdown(f"<div style='text-align:center;font-weight:bold;'>📄 Page {st.session_state.page + 1} sur {total_pages}</div>", unsafe_allow_html=True)
                 with col_next:
                     if st.button("➡️ Page suivante") and (st.session_state.page + 1) < total_pages:
                         st.session_state.page += 1
-                        st.components.v1.html("<script>window.scrollTo(0, 0);</script>", height=0)
+                        st.session_state.scroll_to_top = True
                         st.rerun()
         else:
             st.error(f"Erreur API: {response.status_code}")
