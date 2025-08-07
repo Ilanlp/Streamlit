@@ -210,8 +210,6 @@ def show_projet2():
     components.html(powerbi_iframe, height=1020, scrolling=True)
 
 
-    components.html(powerbi_iframe, height=700)
-
 
 if __name__ == "__main__":
     main() 
