@@ -204,7 +204,7 @@ def show_projet2():
     """
 
     # Affiche dans l'app Streamlit
-    components.html(powerbi_iframe, height=1000, width=1000)
+    components.html(powerbi_iframe, height=2000, width=1000)
 
 
 
