@@ -4,3 +4,4 @@ pandas
 plotly
 python-dotenv
 streamlit-option-menu 
+streamlit-js-eval
