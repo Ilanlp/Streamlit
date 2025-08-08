@@ -13,7 +13,7 @@ load_dotenv()
 
 # Configuration de la page
 st.set_page_config(
-    page_title="💼 Job Market Dashboard",
+    page_title="Job Market Dashboard",
     page_icon="💼",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -66,23 +66,23 @@ def main():
     """, unsafe_allow_html=True)
     
     # Navigation avec sidebar
-    st.sidebar.title("🧭 Navigation")
+    st.sidebar.title("Navigation")
     
     # Menu de navigation
-    page = st.sidebar.selectbox(
+    page = st.sidebar.radio(
         "Choisissez une page :",
-        ["👤 Profile","🧮 Projet 2"]
+        ["👤 Espace Candidat","🧮 DataViz"]
     )
     
 
-    if page == "👤 Profile":
+    if page == "👤 Espace Candidat":
         show_candidate_profile()
-    elif page == "🧮 Projet 2":
+    elif page == "🧮 DataViz":
         show_projet2()
 
 def show_candidate_profile():
     """Page de profil candidat avec filtres et pagination"""
-    st.title("🎯 Filtres géographiques")
+    st.title("Filtres géographiques")
 
     if st.session_state.get("scroll_to_top", False):
         streamlit_js_eval(js_expressions=["window.scrollTo(0, 0)"])
@@ -166,7 +166,7 @@ def show_candidate_profile():
                     with st.container():
                         st.markdown(f"""
                             <div class="metric-card">
-                                <h4>🎯 {offre.get('TITLE', 'Titre non disponible')}</h4>
+                                <h4>{offre.get('TITLE', 'Titre non disponible')}</h4>
                                 <p><strong>📍 Lieu:</strong> {offre.get('VILLE', 'Non spécifié')} ({offre.get('REGION', 'Région non spécifiée')})</p>
                                 <p><strong>💼 Contrat:</strong> {offre.get('TYPE_CONTRAT', 'Non spécifié')}</p>
                                 <p><strong>🛠️ Compétences:</strong> {', '.join(eval(offre.get('SKILLS', '[]')))}</p>
