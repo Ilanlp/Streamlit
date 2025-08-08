@@ -4,11 +4,11 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 from dotenv import load_dotenv
-import os
+import os, base64
 import streamlit.components.v1 as components
 from streamlit_js_eval import streamlit_js_eval, get_geolocation
 from streamlit_mermaid import st_mermaid
-
+from ast import literal_eval
 
 load_dotenv()
 
@@ -21,8 +21,9 @@ st.set_page_config(
 
 # Variables globales
 API_BASE_URL = "https://back-end-render-dg5f.onrender.com"
+LOGO_DIR = "assets/logos"  # <-- place tes logos ici
 
-# CSS personnalisé pour un style moderne
+# CSS
 st.markdown("""
 <style>
     .main-header {
@@ -56,31 +57,53 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
+# ---------- Utils
+def _data_uri(path: str) -> str:
+    """Retourne une data URI base64 pour embarquer l'image dans le SVG."""
+    ext = os.path.splitext(path)[1].lower()
+    if not os.path.exists(path):
+        raise FileNotFoundError(f"Logo introuvable: {path}")
+    mime = "image/png" if ext == ".png" else "image/svg+xml"
+    with open(path, "rb") as f:
+        b64 = base64.b64encode(f.read()).decode("utf-8")
+    return f"data:{mime};base64,{b64}"
+
+def safe_list(x):
+    if isinstance(x, list):
+        return x
+    if isinstance(x, str):
+        try:
+            v = literal_eval(x)
+            return v if isinstance(v, list) else []
+        except Exception:
+            return []
+    return []
+
+# ---------- Pages
 def main():
-    # En-tête principal
+    # En-tête
     st.markdown("""
     <div class="main-header">
         <h1>💼 Job Market Dashboard</h1>
         <p>Explorez les données du marché de l'emploi en un clic</p>
     </div>
     """, unsafe_allow_html=True)
-    
-    # Navigation avec sidebar
+
+    # Sidebar
     st.sidebar.title("Navigation")
-    
-    # Menu de navigation
     page = st.sidebar.radio(
         "Choisissez une page :",
-        ["🗺️ Stack Technique","🧮 DataViz","👤 Espace Candidat"]
+        ["🗺️ Stack Technique (Logos)", "🗺️ Stack Technique (Mermaid)", "🧮 DataViz", "👤 Espace Candidat"]
     )
-    
 
     if page == "👤 Espace Candidat":
         show_candidate_profile()
     elif page == "🧮 DataViz":
         show_projet2()
-    elif page == "🗺️ Stack Technique":
-        show_stack()
+    elif page == "🗺️ Stack Technique (Mermaid)":
+        show_stack_mermaid()
+    elif page == "🗺️ Stack Technique (Logos)":
+        show_stack_logos()
 
 def show_candidate_profile():
     """Page de profil candidat avec filtres et pagination"""
@@ -89,25 +112,25 @@ def show_candidate_profile():
     if st.session_state.get("scroll_to_top", False):
         streamlit_js_eval(js_expressions=["window.scrollTo(0, 0)"])
         st.session_state.scroll_to_top = False
-    
-    # Initialisation pagination
+
+    # Pagination
     if "page" not in st.session_state:
         st.session_state.page = 0
     limit = 20
     offset = st.session_state.page * limit
 
-    # Récupération des données pour les dropdowns
+    # Dropdown data
     try:
-        villes = [v[0] for v in requests.get(f"{API_BASE_URL}/candidat/ville").json()["data"]]
-        departements = [d[0] for d in requests.get(f"{API_BASE_URL}/candidat/departement").json()["data"]]
-        regions = [r[0] for r in requests.get(f"{API_BASE_URL}/candidat/region").json()["data"]]
-        skills = [s["skill"] for s in requests.get(f"{API_BASE_URL}/skills/").json()]
-        contrats = [c[0] for c in requests.get(f"{API_BASE_URL}/candidat/contrat").json()["data"]]
+        villes = [v[0] for v in requests.get(f"{API_BASE_URL}/candidat/ville", timeout=20).json()["data"]]
+        departements = [d[0] for d in requests.get(f"{API_BASE_URL}/candidat/departement", timeout=20).json()["data"]]
+        regions = [r[0] for r in requests.get(f"{API_BASE_URL}/candidat/region", timeout=20).json()["data"]]
+        skills = [s["skill"] for s in requests.get(f"{API_BASE_URL}/skills/", timeout=20).json()]
+        contrats = [c[0] for c in requests.get(f"{API_BASE_URL}/candidat/contrat", timeout=20).json()["data"]]
     except Exception as e:
         st.error(f"Erreur lors du chargement des données : {str(e)}")
         return
-    
-    # Interface de filtres
+
+    # Filtres UI
     col1, col2 = st.columns(2)
     with col1:
         st.subheader("🏙️ Villes")
@@ -134,11 +157,11 @@ def show_candidate_profile():
         }
         selected_date_label = st.selectbox("Filtrer par date", [""] + list(date_options.keys()))
 
-    # Bouton de recherche
+    # Rechercher
     if st.button("🔍 Rechercher", type="primary"):
         st.session_state.page = 0  # reset à la première page
 
-    # Construction des paramètres
+    # Params
     params = []
     for v in selected_villes: params.append(("ville", v))
     for d in selected_departements: params.append(("departement", d))
@@ -150,9 +173,9 @@ def show_candidate_profile():
     params.append(("limit", limit))
     params.append(("offset", offset))
 
-    # Appel API
+    # API call
     try:
-        response = requests.get(f"{API_BASE_URL}/search", params=params)
+        response = requests.get(f"{API_BASE_URL}/search", params=params, timeout=60)
         if response.status_code == 200:
             data = response.json()
             offres = data.get("data", [])
@@ -163,20 +186,21 @@ def show_candidate_profile():
                 st.warning("Aucune offre trouvée.")
             else:
                 st.subheader(f"📊 {total_count} offres trouvées – Page {st.session_state.page + 1} / {total_pages}")
-                
+
                 for i, offre in enumerate(offres, 1):
+                    skills_list = safe_list(offre.get('SKILLS', '[]'))
                     with st.container():
                         st.markdown(f"""
                             <div class="metric-card">
                                 <h4>{offre.get('TITLE', 'Titre non disponible')}</h4>
                                 <p><strong>📍 Lieu:</strong> {offre.get('VILLE', 'Non spécifié')} ({offre.get('REGION', 'Région non spécifiée')})</p>
                                 <p><strong>💼 Contrat:</strong> {offre.get('TYPE_CONTRAT', 'Non spécifié')}</p>
-                                <p><strong>🛠️ Compétences:</strong> {', '.join(eval(offre.get('SKILLS', '[]')))}</p>
+                                <p><strong>🛠️ Compétences:</strong> {', '.join(skills_list[:10])}</p>
                                 <p><strong>🔗 Lien:</strong> <a href="{offre.get('SOURCE_URL', '#')}" target="_blank">Voir l'offre</a></p>
                             </div>
                         """, unsafe_allow_html=True)
 
-                # Pagination UI
+                # Pagination
                 col_prev, col_page, col_next = st.columns(3)
                 with col_prev:
                     if st.button("⬅️ Page précédente") and st.session_state.page > 0:
@@ -205,13 +229,11 @@ def show_projet2():
     src="https://app.powerbi.com/view?r=eyJrIjoiNjRkNjQ1ZjgtOWFjZS00ODhiLTg2MzktNmE5ZmJlYzdhMmFkIiwidCI6IjFjODA3N2YwLTY5MDItNDc1NC1hYzE4LTA4Zjc4ZjhlOTUxZSJ9" 
     frameborder="0" allowFullScreen="true"></iframe>
     """
-
-    # Affiche dans l'app Streamlit
     components.html(powerbi_iframe, height=1020, width=1020)
 
-def show_stack():
-    st.title("🗺️ Stack Technique du Projet")
-    st.caption("Vue d’ensemble des outils utilisés et des flux de données.")
+def show_stack_mermaid():
+    st.title("🗺️ Stack Technique du Projet (Mermaid)")
+    st.caption("Vue d’ensemble des outils utilisés et des flux de données (rendu Mermaid).")
 
     mermaid_code = """
 flowchart LR
@@ -256,7 +278,108 @@ flowchart LR
 """
     st_mermaid(mermaid_code)
 
+def show_stack_logos():
+    st.title("🗺️ Stack Technique du Projet (Logos)")
+    st.caption("Diagramme SVG avec logos embarqués.")
 
+    # chemins logos
+    logos = {
+        "sources":  os.path.join(LOGO_DIR, "sources.png"),
+        "python":   os.path.join(LOGO_DIR, "python.png"),
+        "airflow":  os.path.join(LOGO_DIR, "airflow.png"),
+        "dbt":      os.path.join(LOGO_DIR, "dbt.png"),
+        "snowflake":os.path.join(LOGO_DIR, "snowflake.png"),
+        "docker":   os.path.join(LOGO_DIR, "docker.png"),
+        "github":   os.path.join(LOGO_DIR, "github.png"),
+        "fastapi":  os.path.join(LOGO_DIR, "fastapi.png"),
+        "streamlit":os.path.join(LOGO_DIR, "streamlit.png"),
+        "powerbi":  os.path.join(LOGO_DIR, "powerbi.png"),
+    }
+    try:
+        data = {k: _data_uri(v) for k, v in logos.items()}
+    except Exception as e:
+        st.error(f"⚠️ Problème de logos : {e}")
+        st.info("Assure-toi d’avoir tous les fichiers dans assets/logos/ (voir liste en haut).")
+        return
 
+    svg = f"""
+<svg viewBox="0 0 1100 650" xmlns="http://www.w3.org/2000/svg" style="max-width:100%;height:auto;background:#0b0d10;">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#9CA3AF"></path>
+    </marker>
+    <style><![CDATA[
+      .label {{ fill:#e5e7eb; font: 600 14px system-ui, -apple-system, Segoe UI, Roboto; }}
+      .sublabel {{ fill:#9ca3af; font: 500 12px system-ui; }}
+      .box {{ fill:#111827; stroke:#374151; stroke-width:1.2; rx:16; }}
+      .link {{ stroke:#9CA3AF; stroke-width:2.2; fill:none; }}
+    ]]></style>
+  </defs>
+
+  <!-- Zones -->
+  <rect x="40"  y="260" width="170" height="120" class="box"/>
+  <rect x="260" y="260" width="170" height="120" class="box"/>
+  <rect x="500" y="220" width="220" height="200" class="box"/>
+  <rect x="820" y="180" width="230" height="320" class="box"/>
+  <rect x="520" y="60"  width="540" height="90"  class="box"/>
+
+  <text x="50"  y="252" class="sublabel">Sources</text>
+  <text x="270" y="252" class="sublabel">ETL</text>
+  <text x="510" y="212" class="sublabel">Data Warehouse & Transform</text>
+  <text x="830" y="172" class="sublabel">Apps & Viz</text>
+  <text x="530" y="52"  class="sublabel">Orchestration, CI/CD & Containers</text>
+
+  <!-- Logos + labels -->
+  <image href="{data['sources']}" x="90" y="285" width="80" height="80"/>
+  <text x="125" y="385" text-anchor="middle" class="label">APIs / CSV / JSON</text>
+
+  <image href="{data['python']}" x="310" y="285" width="80" height="80"/>
+  <text x="345" y="385" text-anchor="middle" class="label">Python ETL</text>
+
+  <image href="{data['snowflake']}" x="555" y="245" width="110" height="110"/>
+  <text x="615" y="370" text-anchor="middle" class="label">Snowflake DW</text>
+
+  <image href="{data['dbt']}" x="535" y="120" width="70" height="70"/>
+  <text x="570" y="205" text-anchor="middle" class="label">dbt</text>
+
+  <image href="{data['airflow']}" x="625" y="115" width="80" height="80"/>
+  <text x="665" y="205" text-anchor="middle" class="label">Airflow</text>
+
+  <image href="{data['github']}" x="760" y="95" width="60" height="60"/>
+  <text x="790" y="165" text-anchor="middle" class="label">GitHub</text>
+
+  <image href="{data['docker']}" x="835" y="95" width="70" height="60"/>
+  <text x="870" y="165" text-anchor="middle" class="label">Docker</text>
+
+  <image href="{data['fastapi']}" x="860" y="210" width="80" height="80"/>
+  <text x="900" y="305" text-anchor="middle" class="label">FastAPI</text>
+
+  <image href="{data['streamlit']}" x="860" y="320" width="80" height="80"/>
+  <text x="900" y="415" text-anchor="middle" class="label">Streamlit</text>
+
+  <image href="{data['powerbi']}" x="860" y="430" width="80" height="80"/>
+  <text x="900" y="525" text-anchor="middle" class="label">Power BI</text>
+
+  <!-- Flèches -->
+  <path class="link" marker-end="url(#arrow)" d="M 210 320 C 230 320, 260 320, 260 320"/>
+  <path class="link" marker-end="url(#arrow)" d="M 430 320 C 470 320, 520 320, 555 300"/>
+
+  <path class="link" marker-end="url(#arrow)" d="M 575 190 C 580 210, 590 230, 610 240"/>
+  <path class="link" marker-end="url(#arrow)" d="M 660 190 C 650 210, 640 230, 630 240"/>
+  <path class="link" marker-end="url(#arrow)" d="M 660 190 C 630 240, 470 300, 430 320"/>
+
+  <path class="link" marker-end="url(#arrow)" d="M 665 300 C 760 300, 820 300, 860 250"/>
+  <path class="link" marker-end="url(#arrow)" d="M 900 290 C 900 330, 900 330, 900 350"/>
+  <path class="link" marker-end="url(#arrow)" d="M 665 320 C 760 380, 820 440, 860 470"/>
+
+  <path class="link" marker-end="url(#arrow)" d="M 790 125 C 760 125, 720 140, 710 155"/>
+  <path class="link" marker-end="url(#arrow)" d="M 870 125 C 820 160, 680 170, 660 185"/>
+  <path class="link" marker-end="url(#arrow)" d="M 870 125 C 760 150, 600 170, 560 185"/>
+  <path class="link" marker-end="url(#arrow)" d="M 870 125 C 680 150, 420 230, 360 280"/>
+</svg>
+"""
+    components.html(svg, height=720, scrolling=False)
+
+# Run
 if __name__ == "__main__":
-    main() 
+    main()
