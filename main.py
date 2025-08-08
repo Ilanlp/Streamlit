@@ -69,11 +69,15 @@ def main():
     st.sidebar.title("Navigation")
     
     # Menu de navigation
-    tab1, tab2 = st.tabs(["👤 Profile", "📊 Power BI"])
+    page = st.sidebar.radio(
+        "Choisissez une page :",
+        ["👤 Espace Candidat","🧮 DataViz"]
+    )
+    
 
-    with tab1:
+    if page == "👤 Espace Candidat":
         show_candidate_profile()
-    with tab2:
+    elif page == "🧮 DataViz":
         show_projet2()
 
 def show_candidate_profile():
