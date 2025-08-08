@@ -95,15 +95,13 @@ def main():
     st.sidebar.title("Navigation")
     page = st.sidebar.radio(
         "Choisissez une page :",
-        ["🗺️ Stack Technique (Logos)", "🗺️ Stack Technique (Mermaid)", "🧮 DataViz", "👤 Espace Candidat"]
+        ["🗺️ Stack Technique (Logos)", "🧮 DataViz", "👤 Espace Candidat"]
     )
 
     if page == "👤 Espace Candidat":
         show_candidate_profile()
     elif page == "🧮 DataViz":
         show_projet2()
-    elif page == "🗺️ Stack Technique (Mermaid)":
-        show_stack_mermaid()
     elif page == "🗺️ Stack Technique (Logos)":
         show_stack_logos()
 
@@ -242,7 +240,7 @@ def show_stack_logos():
 │   🌐 APIs  •  📄 CSV/JSON  •  🇫🇷 France Travail                                         │
 └───────────────┬──────────────────────────────────────────────────────────────────────────┘
                 │
-                ▼
+               ▼
 ┌───────────────────────────────┐
 │          Ingestion            │
 │        🐍 Python ETL          │
