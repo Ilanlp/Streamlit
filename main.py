@@ -215,45 +215,45 @@ def show_stack():
 
     mermaid_code = """
 flowchart LR
-  S[Sources (APIs, CSV, JSON)] --> PY[Python ETL]
+    S[Sources: APIs, CSV, JSON] --> PY[Python ETL]
 
-  subgraph Orchestration
-    AF[Airflow]
-  end
-  subgraph Versioning_CI_CD
-    GH[GitHub]
-  end
-  subgraph Containers
-    DK[Docker]
-  end
-  subgraph Data_Platform
-    SN[(Snowflake Data Warehouse)]
-    DBT[dbt Models / Tests]
-  end
-  subgraph Apps_and_Viz
-    FA[FastAPI Backend]
-    ST[Streamlit App]
-    PBI[Power BI]
-  end
+    subgraph Orchestration
+        AF[Airflow]
+    end
 
-  %% Pipelines
-  PY -->|Load| SN
-  AF -->|Schedule| PY
-  AF -->|Schedule| DBT
-  DBT -->|Transform| SN
+    subgraph Versioning_CI_CD
+        GH[GitHub]
+    end
 
-  %% Data access
-  FA -->|SQL / Views| SN
-  ST -->|REST| FA
-  PBI -->|Direct Query / Import| SN
+    subgraph Containers
+        DK[Docker]
+    end
 
-  %% DevOps
-  GH -->|Code / PR / Actions| DK
-  DK -.->|Containerize| PY
-  DK -.->|Containerize| FA
-  DK -.->|Containerize| AF
+    subgraph Data_Platform
+        SN[(Snowflake Data Warehouse)]
+        DBT[dbt Models and Tests]
+    end
+
+    subgraph Applications
+        FA[FastAPI Backend]
+        ST[Streamlit App]
+        PBI[Power BI]
+    end
+
+    PY --> SN
+    AF --> PY
+    AF --> DBT
+    DBT --> SN
+
+    FA --> SN
+    ST --> FA
+    PBI --> SN
+
+    GH --> DK
+    DK --> PY
+    DK --> FA
+    DK --> AF
 """
-    st_mermaid(mermaid_code)
 
 
 
