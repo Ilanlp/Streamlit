@@ -254,6 +254,7 @@ flowchart LR
     DK --> FA
     DK --> AF
 """
+    st_mermaid(mermaid_code)
 
 
 
