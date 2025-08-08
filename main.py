@@ -193,7 +193,7 @@ def show_candidate_profile():
         st.error(f"❌ Erreur lors de la recherche : {str(e)}")
 
 def show_projet2():
-    st.title("📊 DataViz - Dashboard Power BI")
+    st.title("📊 DataViz - Marché de la Data 2025")
     st.markdown("Voici mon dashboard interactif Power BI intégré :")
     st.info("🔍 Pour profiter pleinement du dashboard, cliquez sur l’icône plein écran en bas à droite de la visualisation.")
 
