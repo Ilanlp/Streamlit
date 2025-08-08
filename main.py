@@ -14,7 +14,6 @@ load_dotenv()
 # Configuration de la page
 st.set_page_config(
     page_title="Job Market Dashboard",
-    page_icon="💼",
     layout="wide",
     initial_sidebar_state="expanded"
 )
