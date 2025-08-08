@@ -212,46 +212,47 @@ def show_projet2():
 def show_stack():
     st.title("🗺️ Stack Technique du Projet")
     st.caption("Vue d’ensemble des outils utilisés et des flux de données.")
+
     mermaid_code = """
-    flowchart LR
-      S[Sources<br/>(APIs, CSV, JSON)] --> PY[Python ETL]
+flowchart LR
+  S[Sources (APIs, CSV, JSON)] --> PY[Python ETL]
 
-      subgraph Orchestration
-        AF[Airflow]
-      end
-      subgraph Versionning & CI/CD
-        GH[GitHub]
-      end
-      subgraph Containers
-        DK[Docker]
-      end
-      subgraph Data Platform
-        SN[(Snowflake Data Warehouse)]
-        DBT[dbt Models/Tests]
-      end
-      subgraph Apps & Viz
-        FA[FastAPI Backend]
-        ST[Streamlit App]
-        PBI[Power BI]
-      end
+  subgraph Orchestration
+    AF[Airflow]
+  end
+  subgraph Versioning_CI_CD
+    GH[GitHub]
+  end
+  subgraph Containers
+    DK[Docker]
+  end
+  subgraph Data_Platform
+    SN[(Snowflake Data Warehouse)]
+    DBT[dbt Models / Tests]
+  end
+  subgraph Apps_and_Viz
+    FA[FastAPI Backend]
+    ST[Streamlit App]
+    PBI[Power BI]
+  end
 
-      %% Pipelines
-      PY -->|Load| SN
-      AF -->|Planifie| PY
-      AF -->|Planifie| DBT
-      DBT -->|Transform| SN
+  %% Pipelines
+  PY -->|Load| SN
+  AF -->|Schedule| PY
+  AF -->|Schedule| DBT
+  DBT -->|Transform| SN
 
-      %% Accès data
-      FA -->|SQL/Views| SN
-      ST -->|REST| FA
-      PBI -->|Direct Query/Import| SN
+  %% Data access
+  FA -->|SQL / Views| SN
+  ST -->|REST| FA
+  PBI -->|Direct Query / Import| SN
 
-      %% DevOps
-      GH -->|Code, PR, Actions| DK
-      DK -. conteneurise .-> PY
-      DK -. conteneurise .-> FA
-      DK -. conteneurise .-> AF
-    """
+  %% DevOps
+  GH -->|Code / PR / Actions| DK
+  DK -.->|Containerize| PY
+  DK -.->|Containerize| FA
+  DK -.->|Containerize| AF
+"""
     st_mermaid(mermaid_code)
 
 
