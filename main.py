@@ -234,65 +234,53 @@ def show_projet2():
     components.html(powerbi_iframe, height=1020, width=1020)
 
 
-def show_stack_logos():
-    st.title("🗺️ Stack Technique du Projet (Logos)")
-    st.caption("Diagramme SVG avec logos embarqués (zoomable).")
+def show_schema_ascii():
+    st.title("🗺️ Stack Technique (schéma)")
+    diagram = r"""
+┌──────────────────────────────────────────────────────────────────────────────────────────┐
+│                                      Sources                                             │
+│   🌐 APIs  •  📄 CSV/JSON  •  🇫🇷 France Travail                                         │
+└───────────────┬──────────────────────────────────────────────────────────────────────────┘
+                │
+                ▼
+┌───────────────────────────────┐
+│          Ingestion            │
+│        🐍 Python ETL          │
+└───────────────┬───────────────┘
+                │   (load)
+                ▼
+        ┌───────────────────────────────────────────────┐
+        │            Data Warehouse & Transfo           │
+        │                ❄️ Snowflake                   │
+        │        ┌──────────────────────────────┐       │
+        │        │      🧱 dbt (models/tests)   │       │
+        │        └──────────────────────────────┘       │
+        └──────────────┬────────────────────────────────┘
+                       │
+          ┌────────────┴─────────────┐
+          │                          │
+          ▼                          ▼
+┌───────────────────────┐   ┌────────────────────────────┐
+│       ⚡ FastAPI       │   │        📊 Power BI         │
+│  (REST, vues métier)  │   │  (Direct Query / Import)   │
+└───────────┬───────────┘   └───────────┬────────────────┘
+            │                           │
+            ▼                           │
+  ┌───────────────────────┐             │
+  │     🎈 Streamlit      │◀────────────┘
+  │  (App interactive)    │
+  └───────────────────────┘
 
-    # --- debug facultatif
-    with st.expander("🧪 Debug logos"):
-        st.write("BASE_DIR:", BASE_DIR)
-        st.write("LOGO_DIR:", LOGO_DIR)
-        try:
-            st.write("Contenu LOGO_DIR:", os.listdir(LOGO_DIR))
-        except Exception as e:
-            st.error(f"listdir failed: {e}")
 
-    logos = {
-        "sources":  os.path.join(LOGO_DIR, "sources.png"),
-        "python":   os.path.join(LOGO_DIR, "python.png"),
-        "airflow":  os.path.join(LOGO_DIR, "airflow.png"),
-        "dbt":      os.path.join(LOGO_DIR, "dbt.png"),
-        "snowflake":os.path.join(LOGO_DIR, "snowflake.png"),
-        "docker":   os.path.join(LOGO_DIR, "docker.png"),
-        "github":   os.path.join(LOGO_DIR, "github.png"),
-        "fastapi":  os.path.join(LOGO_DIR, "fastapi.png"),
-        "streamlit":os.path.join(LOGO_DIR, "streamlit.png"),
-        "powerbi":  os.path.join(LOGO_DIR, "powerbi.png"),
-    }
-    data = {k: _data_uri(v) for k, v in logos.items()}
-
-    # IMPORTANT: enlever max-width:100% qui “retreci” le svg, et donner une largeur de base
-    svg_core = f"""
-<svg viewBox="0 0 1100 650" xmlns="http://www.w3.org/2000/svg"
-     preserveAspectRatio="xMinYMin meet" style="width:1100px; height:auto; background:#0b0d10;">
-  <defs>
-    <marker id="arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
-      <path d="M 0 0 L 10 5 L 0 10 z" fill="#9CA3AF"></path>
-    </marker>
-    <style><![CDATA[
-      .label {{ fill:#e5e7eb; font: 600 14px system-ui, -apple-system, Segoe UI, Roboto; }}
-      .sublabel {{ fill:#9ca3af; font: 500 12px system-ui; }}
-      .box {{ fill:#111827; stroke:#374151; stroke-width:1.2; rx:16; }}
-      .link {{ stroke:#9CA3AF; stroke-width:2.2; fill:none; }}
-    ]]></style>
-  </defs>
-
-  <!-- tes rectangles / images / liens EXACTEMENT comme avant -->
-  <!-- ... (garde ton contenu identique) ... -->
-</svg>
+                    ┌───────────────────────────────────────────────┐
+                    │           Orchestration & CI/CD               │
+                    │    🌬️ Airflow  •  🐙 GitHub  •  🐳 Docker      │
+                    │  - Airflow planifie Python & dbt              │
+                    │  - GitHub (code, PR, actions)                 │
+                    │  - Docker conteneurise services (API, ETL)    │
+                    └───────────────────────────────────────────────┘
 """
-
-    # Slider de zoom (multiplie la taille *visuelle* sans toucher les coordonnées)
-    scale = st.slider("Zoom", min_value=1.0, max_value=3.0, value=1.6, step=0.1)
-
-    html = f"""
-    <div style="width:{1100*scale}px; overflow:visible">
-      <div style="transform: scale({scale}); transform-origin: top left;">
-        {svg_core}
-      </div>
-    </div>
-    """
-    components.html(html, height=int(650*scale)+40, scrolling=False)
+    st.code(diagram)
 
 # Run
 if __name__ == "__main__":
