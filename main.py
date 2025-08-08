@@ -21,7 +21,9 @@ st.set_page_config(
 
 # Variables globales
 API_BASE_URL = "https://back-end-render-dg5f.onrender.com"
-LOGO_DIR = "assets/logos"  # <-- place tes logos ici
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+LOGO_DIR = os.path.join(BASE_DIR, "logos")  # <— plus de dépendance au cwd
 
 # CSS
 st.markdown("""
@@ -231,56 +233,19 @@ def show_projet2():
     """
     components.html(powerbi_iframe, height=1020, width=1020)
 
-def show_stack_mermaid():
-    st.title("🗺️ Stack Technique du Projet (Mermaid)")
-    st.caption("Vue d’ensemble des outils utilisés et des flux de données (rendu Mermaid).")
-
-    mermaid_code = """
-flowchart LR
-    S[Sources: APIs, CSV, JSON] --> PY[Python ETL]
-
-    subgraph Orchestration
-        AF[Airflow]
-    end
-
-    subgraph Versioning_CI_CD
-        GH[GitHub]
-    end
-
-    subgraph Containers
-        DK[Docker]
-    end
-
-    subgraph Data_Platform
-        SN[(Snowflake Data Warehouse)]
-        DBT[dbt Models and Tests]
-    end
-
-    subgraph Applications
-        FA[FastAPI Backend]
-        ST[Streamlit App]
-        PBI[Power BI]
-    end
-
-    PY --> SN
-    AF --> PY
-    AF --> DBT
-    DBT --> SN
-
-    FA --> SN
-    ST --> FA
-    PBI --> SN
-
-    GH --> DK
-    DK --> PY
-    DK --> FA
-    DK --> AF
-"""
-    st_mermaid(mermaid_code)
 
 def show_stack_logos():
     st.title("🗺️ Stack Technique du Projet (Logos)")
     st.caption("Diagramme SVG avec logos embarqués.")
+
+    with st.expander("🧪 Debug logos"):
+        st.write("BASE_DIR:", BASE_DIR)
+        st.write("LOGO_DIR:", LOGO_DIR)
+        try:
+            st.write("Contenu LOGO_DIR:", os.listdir(LOGO_DIR))
+        except Exception as e:
+            st.error(f"listdir failed: {e}")
+
 
     # chemins logos
     logos = {
