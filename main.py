@@ -235,59 +235,52 @@ def show_projet2():
 
 
 def show_stack_logos():
-    st.title("🗺️ Stack Technique (cartes)")
-    st.markdown("""
-    <style>
-      .grid{display:grid;gap:14px;grid-template-columns:repeat(12,1fr)}
-      .card{background:#111827;border:1px solid #374151;border-radius:14px;padding:14px;color:#e5e7eb}
-      .title{font-weight:700;margin:0 0 6px}
-      .muted{color:#9ca3af;font-size:0.95rem;margin:0}
-      .span-12{grid-column:span 12}
-      .span-6{grid-column:span 6}
-      .span-4{grid-column:span 4}
-      .span-3{grid-column:span 3}
-      @media(max-width:900px){.span-6,.span-4,.span-3{grid-column:span 12}}
-      .arrow{color:#9ca3af;margin:2px 0}
-    </style>
-    <div class="grid">
-      <div class="card span-12">
-        <p class="title">Sources</p>
-        <p class="muted">🌐 APIs • 📄 CSV/JSON • 🇫🇷 France Travail</p>
-      </div>
+    st.title("🗺️ Stack Technique (schéma)")
+    diagram = r"""
+┌──────────────────────────────────────────────────────────────────────────────────────────┐
+│                                      Sources                                             │
+│   🌐 APIs  •  📄 CSV/JSON  •  🇫🇷 France Travail                                         │
+└───────────────┬──────────────────────────────────────────────────────────────────────────┘
+                │
+                ▼
+┌───────────────────────────────┐
+│          Ingestion            │
+│        🐍 Python ETL          │
+└───────────────┬───────────────┘
+                │   (load)
+                ▼
+        ┌───────────────────────────────────────────────┐
+        │            Data Warehouse & Transfo           │
+        │                ❄️ Snowflake                   │
+        │        ┌──────────────────────────────┐       │
+        │        │      🧱 dbt (models/tests)   │       │
+        │        └──────────────────────────────┘       │
+        └──────────────┬────────────────────────────────┘
+                       │
+          ┌────────────┴─────────────┐
+          │                          │
+          ▼                          ▼
+┌───────────────────────┐   ┌────────────────────────────┐
+│       ⚡ FastAPI       │   │        📊 Power BI         │
+│  (REST, vues métier)  │   │  (Direct Query / Import)   │
+└───────────┬───────────┘   └───────────┬────────────────┘
+            │                           │
+            ▼                           │
+  ┌───────────────────────┐             │
+  │     🎈 Streamlit      │◀────────────┘
+  │  (App interactive)    │
+  └───────────────────────┘
 
-      <div class="card span-4">
-        <p class="title">Ingestion</p>
-        <p class="muted">🐍 Python ETL</p>
-      </div>
-      <div class="card span-8">
-        <p class="title">Data Warehouse & Transformation</p>
-        <p class="muted">❄️ Snowflake</p>
-        <div class="card" style="margin-top:8px;">
-          <p class="title" style="font-size:0.95rem;">🧱 dbt (models/tests)</p>
-          <p class="muted">Transformations SQL, tests, documentation</p>
-        </div>
-      </div>
 
-      <div class="card span-4">
-        <p class="title">⚡ FastAPI</p>
-        <p class="muted">Services REST, vues SQL métier</p>
-      </div>
-      <div class="card span-4">
-        <p class="title">🎈 Streamlit</p>
-        <p class="muted">App interactive pour les utilisateurs</p>
-      </div>
-      <div class="card span-4">
-        <p class="title">📊 Power BI</p>
-        <p class="muted">Direct Query / Import depuis Snowflake</p>
-      </div>
-
-      <div class="card span-12">
-        <p class="title">Orchestration & CI/CD</p>
-        <p class="muted">🌬️ Airflow — planifie Python & dbt • 🐙 GitHub — code, PR, Actions • 🐳 Docker — conteneurisation</p>
-      </div>
-    </div>
-    """, unsafe_allow_html=True)
-
+                    ┌───────────────────────────────────────────────┐
+                    │           Orchestration & CI/CD               │
+                    │    🌬️ Airflow  •  🐙 GitHub  •  🐳 Docker      │
+                    │  - Airflow planifie Python & dbt              │
+                    │  - GitHub (code, PR, actions)                 │
+                    │  - Docker conteneurise services (API, ETL)    │
+                    └───────────────────────────────────────────────┘
+"""
+    st.code(diagram)
 
 # Run
 if __name__ == "__main__":
