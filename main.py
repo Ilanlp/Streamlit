@@ -70,7 +70,7 @@ def main():
     # Menu de navigation
     page = st.sidebar.radio(
         "Choisissez une page :",
-        ["👤 Espace Candidat","🧮 DataViz"]
+        ["🧮 DataViz","👤 Espace Candidat"]
     )
     
 
