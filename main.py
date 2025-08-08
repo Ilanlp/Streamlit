@@ -343,7 +343,7 @@ def show_stack_logos():
   <path class="link" marker-end="url(#arrow)" d="M 870 125 C 680 150, 420 230, 360 280"/>
 </svg>
 """
-    components.html(svg, height=720, scrolling=False)
+    components.html(svg, height=720*3, scrolling=False)
 
 # Run
 if __name__ == "__main__":
