@@ -5,4 +5,5 @@ plotly
 python-dotenv
 streamlit-option-menu 
 streamlit-js-eval==0.1.5
+streamlit-mermaid
 

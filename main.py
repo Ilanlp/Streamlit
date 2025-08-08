@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 import os
 import streamlit.components.v1 as components
 from streamlit_js_eval import streamlit_js_eval, get_geolocation
+from streamlit_mermaid import st_mermaid
 
 
 load_dotenv()
@@ -70,7 +71,7 @@ def main():
     # Menu de navigation
     page = st.sidebar.radio(
         "Choisissez une page :",
-        ["🧮 DataViz","👤 Espace Candidat"]
+        ["🗺️ Stack Technique","🧮 DataViz","👤 Espace Candidat"]
     )
     
 
@@ -78,6 +79,8 @@ def main():
         show_candidate_profile()
     elif page == "🧮 DataViz":
         show_projet2()
+    elif page == "🗺️ Stack Technique":
+        show_stack()
 
 def show_candidate_profile():
     """Page de profil candidat avec filtres et pagination"""
@@ -205,6 +208,51 @@ def show_projet2():
 
     # Affiche dans l'app Streamlit
     components.html(powerbi_iframe, height=1020, width=1020)
+
+def show_stack():
+    st.title("🗺️ Stack Technique du Projet")
+    st.caption("Vue d’ensemble des outils utilisés et des flux de données.")
+    mermaid_code = """
+    flowchart LR
+      S[Sources<br/>(APIs, CSV, JSON)] --> PY[Python ETL]
+
+      subgraph Orchestration
+        AF[Airflow]
+      end
+      subgraph Versionning & CI/CD
+        GH[GitHub]
+      end
+      subgraph Containers
+        DK[Docker]
+      end
+      subgraph Data Platform
+        SN[(Snowflake Data Warehouse)]
+        DBT[dbt Models/Tests]
+      end
+      subgraph Apps & Viz
+        FA[FastAPI Backend]
+        ST[Streamlit App]
+        PBI[Power BI]
+      end
+
+      %% Pipelines
+      PY -->|Load| SN
+      AF -->|Planifie| PY
+      AF -->|Planifie| DBT
+      DBT -->|Transform| SN
+
+      %% Accès data
+      FA -->|SQL/Views| SN
+      ST -->|REST| FA
+      PBI -->|Direct Query/Import| SN
+
+      %% DevOps
+      GH -->|Code, PR, Actions| DK
+      DK -. conteneurise .-> PY
+      DK -. conteneurise .-> FA
+      DK -. conteneurise .-> AF
+    """
+    st_mermaid(mermaid_code)
 
 
 
