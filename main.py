@@ -226,7 +226,7 @@ def show_projet2():
 
     powerbi_iframe = """
     <iframe title="Back-to-Basic" width="800" height="600" 
-    src="https://app.powerbi.com/view?r=eyJrIjoiNjRkNjQ1ZjgtOWFjZS00ODhiLTg2MzktNmE5ZmJlYzdhMmFkIiwidCI6IjFjODA3N2YwLTY5MDItNDc1NC1hYzE4LTA4Zjc4ZjhlOTUxZSJ9" 
+    src="https://app.powerbi.com/view?r=eyJrIjoiNjBlN2EwOTctYzlhZS00NWVjLTk2N2ItZjY3NjY4MTk4ODdkIiwidCI6IjFjODA3N2YwLTY5MDItNDc1NC1hYzE4LTA4Zjc4ZjhlOTUxZSJ9" 
     frameborder="0" allowFullScreen="true"></iframe>
     """
     components.html(powerbi_iframe, height=1020, width=1020)
