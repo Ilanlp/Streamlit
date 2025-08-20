@@ -95,7 +95,7 @@ def main():
     st.sidebar.title("Navigation")
     page = st.sidebar.radio(
         "Choisissez une page :",
-        ["🗺️ Stack Technique (Logos)", "🧮 DataViz", "👤 Espace Candidat"]
+        ["🗺️ Stack Technique (Logos)", "🧮 DataViz", "👤 Espace Candidat","🧮 Autres"]
     )
 
     if page == "👤 Espace Candidat":
@@ -104,6 +104,8 @@ def main():
         show_projet2()
     elif page == "🗺️ Stack Technique (Logos)":
         show_stack_logos()
+    elif page == "🧮 Autres":
+        show_projet3()
 
 def show_candidate_profile():
     """Page de profil candidat avec filtres et pagination"""
@@ -231,6 +233,17 @@ def show_projet2():
     """
     components.html(powerbi_iframe, height=1020, width=1020)
 
+def show_projet3():
+    st.title("📊 DataViz - Drug Sales Report")
+    st.markdown("Voici mon dashboard interactif Power BI intégré :")
+    st.info("🔍 Pour profiter pleinement du dashboard, cliquez sur l’icône plein écran en bas à droite de la visualisation.")
+
+    powerbi_iframe = """
+    <iframe title="Back-to-Basic" width="800" height="600" 
+    src="https://app.powerbi.com/view?r=eyJrIjoiNjRkNjQ1ZjgtOWFjZS00ODhiLTg2MzktNmE5ZmJlYzdhMmFkIiwidCI6IjFjODA3N2YwLTY5MDItNDc1NC1hYzE4LTA4Zjc4ZjhlOTUxZSJ9" 
+    frameborder="0" allowFullScreen="true"></iframe>
+    """
+    components.html(powerbi_iframe, height=1020, width=1020)
 
 def show_stack_logos():
     st.title("🗺️ Stack Technique (schéma)")
