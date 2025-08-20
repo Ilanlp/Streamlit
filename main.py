@@ -9,7 +9,7 @@ import streamlit.components.v1 as components
 from streamlit_js_eval import streamlit_js_eval, get_geolocation
 from streamlit_mermaid import st_mermaid
 from ast import literal_eval
-from PIL import image
+from PIL import Image
 
 load_dotenv()
 
