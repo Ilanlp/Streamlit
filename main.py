@@ -245,6 +245,52 @@ def show_projet3():
     """
     components.html(powerbi_iframe, height=1020, width=1020)
 
+    st.title("📊 ML - predictive Maintenance Classification")
+
+        # --- Image 1 : Distribution target ---
+    st.header("1️⃣ Distribution du couple et de la vitesse en fonction du target")
+    st.write("Ces graphiques en violon montrent la distribution du couple (Torque) et de la vitesse de rotation (Rotational Speed) "
+            "par rapport à la variable cible (Target : panne ou non). On observe une variabilité plus importante en cas de panne.")
+    img1 = Image.open("ML/distribution_target.png")
+    st.image(img1, caption="Distribution torque et vitesse de rotation", use_column_width=True)
+
+    # --- Image 2 : Dataset ---
+    st.header("2️⃣ Aperçu du dataset")
+    st.write("Le jeu de données contient 10 000 observations et 14 colonnes, incluant les températures, vitesse de rotation, couple, usure outil et type de panne.")
+    img2 = Image.open("ML/dataset.png")
+    st.image(img2, caption="Aperçu des premières lignes du dataset", use_column_width=True)
+
+    # --- Image 3 : Modèles et confusion matrix ---
+    st.header("3️⃣ Résultats des modèles de classification")
+    st.write("Les matrices de confusion comparent les modèles (Balanced Random Forest, Bagging, RUS Boost, Easy Ensemble). "
+            "On observe que les modèles équilibrés gèrent mieux les classes minoritaires, avec un ROC AUC proche de 0.98.")
+    img3 = Image.open("ML/Conclusion.png")
+    st.image(img3, caption="Comparaison des modèles via matrices de confusion et scores", use_column_width=True)
+
+    # --- Image 4 : Scatterplot ---
+    st.header("4️⃣ Relation entre vitesse et couple")
+    st.write("Ce scatterplot met en évidence les différents types de pannes en fonction du couple et de la vitesse de rotation. "
+            "On distingue des zones spécifiques associées à certains types de défaillances.")
+    img4 = Image.open("ML/scatterplot.png")
+    st.image(img4, caption="Couple vs vitesse de rotation selon le type de panne", use_column_width=True)
+
+    # --- Image 5 : Pairplot ---
+    st.header("5️⃣ Pairplot des variables numériques")
+    st.write("Le pairplot permet de visualiser les relations croisées entre variables, avec une coloration par rapport au target (panne ou non).")
+    img5 = Image.open("ML/pairplot.png")
+    st.image(img5, caption="Relations croisées entre variables et target", use_column_width=True)
+
+    # --- Image 6 : Heatmap ---
+    st.header("6️⃣ Matrice de corrélation")
+    st.write("La heatmap révèle une forte corrélation négative entre le couple et la vitesse de rotation (-0.88), "
+            "et une corrélation positive entre température de l'air et température du process (0.88).")
+    img6 = Image.open("ML/heatmap.png")
+    st.image(img6, caption="Matrice de corrélation des variables", use_column_width=True)
+
+    # Footer
+    st.markdown("---")
+    st.markdown("✅ Analyse complète du dataset de maintenance prédictive.")
+
 
    
 
