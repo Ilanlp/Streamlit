@@ -254,6 +254,12 @@ def show_projet3():
     img2 = Image.open("ML/dataset.png")
     st.image(img2, caption="Aperçu des premières lignes du dataset", use_container_width=True)
 
+    # --- Image 5 : Pairplot ---
+    st.header("Pairplot des variables numériques")
+    st.write("Le pairplot permet de visualiser les relations croisées entre variables, avec une coloration par rapport au target (panne ou non).")
+    img5 = Image.open("ML/pairplot.png")
+    st.image(img5, caption="Relations croisées entre variables et target", use_column_width=True)
+
         # --- Image 1 : Distribution target ---
     st.header("Distribution du couple et de la vitesse en fonction du target")
     st.write("Ces graphiques en violon montrent la distribution du couple (Torque) et de la vitesse de rotation (Rotational Speed) "
@@ -261,11 +267,6 @@ def show_projet3():
     img1 = Image.open("ML/distribution_target.png")
     st.image(img1, caption="Distribution torque et vitesse de rotation", use_container_width=True)
 
-    # --- Image 5 : Pairplot ---
-    st.header("Pairplot des variables numériques")
-    st.write("Le pairplot permet de visualiser les relations croisées entre variables, avec une coloration par rapport au target (panne ou non).")
-    img5 = Image.open("ML/pairplot.png")
-    st.image(img5, caption="Relations croisées entre variables et target", use_column_width=True)
 
     # --- Image 4 : Scatterplot ---
     st.header("Relation entre vitesse et couple")
