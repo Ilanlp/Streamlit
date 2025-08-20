@@ -245,6 +245,15 @@ def show_projet3():
     """
     components.html(powerbi_iframe, height=1020, width=1020)
 
+
+    st.title("Mon Modèle Conceptuel de Données")
+
+    st.components.v1.iframe(
+    "https://dbdiagram.io/d/Projet-Ilan-685be325f413ba3508d125e8", 
+    width=1200, 
+    height=800, 
+    scrolling=True)
+
 def show_stack_logos():
     st.title("🗺️ Stack Technique (schéma)")
     diagram = r"""
